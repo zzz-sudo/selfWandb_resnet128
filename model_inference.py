@@ -48,7 +48,7 @@ def load_trained_model(model_path, num_classes=10, device='cpu'):
     # 设置为评估模式
     model.eval()
     
-    print(f"✅ 模型加载成功")
+    print(f" 模型加载成功")
     print(f"   - 训练轮次: {checkpoint.get('epoch', 'N/A')}")
     print(f"   - 最佳验证准确率: {checkpoint.get('best_val_acc', 'N/A'):.2f}%")
     
@@ -174,7 +174,7 @@ def batch_predict(model, data_loader, device):
     all_labels = []
     all_probabilities = []
     
-    print("🔍 正在进行批量预测...")
+    print(" 正在进行批量预测...")
     
     with torch.no_grad():
         for batch_idx, (data, target) in enumerate(data_loader):
@@ -193,7 +193,7 @@ def batch_predict(model, data_loader, device):
             if (batch_idx + 1) % 10 == 0:
                 print(f"   已处理 {batch_idx + 1} 个批次")
     
-    print(f"✅ 批量预测完成，共处理 {len(all_predictions)} 个样本")
+    print(f" 批量预测完成，共处理 {len(all_predictions)} 个样本")
     
     return np.array(all_predictions), np.array(all_labels), np.array(all_probabilities)
 
@@ -280,13 +280,13 @@ def log_to_wandb(metrics, predictions, labels, probabilities, model_path):
     model_artifact.add_file(model_path)
     wandb.log_artifact(model_artifact)
     
-    print("✅ 预测结果已记录到wandb")
+    print(" 预测结果已记录到wandb")
 
 def main():
     """
     主函数
     """
-    print("🚀 开始ResNet128模型推理...")
+    print(" 开始ResNet128模型推理...")
     
     # 设置设备
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -297,7 +297,7 @@ def main():
     
     # 检查模型文件
     if not os.path.exists(model_path):
-        print(f"❌ 模型文件不存在: {model_path}")
+        print(f" 模型文件不存在: {model_path}")
         print("请先运行训练脚本或检查模型路径")
         return
     
@@ -317,7 +317,7 @@ def main():
         model, checkpoint = load_trained_model(model_path, device=device)
         
         # 示例：单张图像预测
-        print("\n📸 单张图像预测示例:")
+        print("\n 单张图像预测示例:")
         print("注意：这里使用随机生成的图像作为示例")
         print("在实际使用中，您可以替换为真实的图像文件路径")
         
@@ -346,7 +346,7 @@ def main():
         )
         
         # 批量预测（如果有验证数据）
-        print("\n📊 批量预测:")
+        print("\n 批量预测:")
         print("如果您有验证数据集，可以取消注释以下代码进行批量预测")
         
         # 示例代码（需要取消注释并修改）：
@@ -376,10 +376,10 @@ def main():
         log_to_wandb(metrics, predictions, labels, probabilities, model_path)
         """
         
-        print("\n✅ 推理完成！")
+        print("\n 推理完成！")
         
     except Exception as e:
-        print(f"❌ 推理过程中发生错误: {str(e)}")
+        print(f" 推理过程中发生错误: {str(e)}")
         raise e
     
     finally:
