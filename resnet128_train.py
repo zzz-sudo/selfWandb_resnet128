@@ -60,7 +60,7 @@ def init_wandb():
         }
     )
     
-    print(f"✅ Wandb实验已初始化: {experiment_name}")
+    print(f" Wandb实验已初始化: {experiment_name}")
     return wandb.config
 
 # ============================================================================
@@ -188,7 +188,7 @@ def get_data_loaders(config):
     创建训练和验证数据加载器
     包含数据增强和标准化
     """
-    print("📊 正在准备数据加载器...")
+    print(" 正在准备数据加载器...")
     
     # 数据增强变换
     if config.data_augmentation:
@@ -243,7 +243,7 @@ def get_data_loaders(config):
         pin_memory=True
     )
     
-    print(f"✅ 数据加载器创建完成")
+    print(f" 数据加载器创建完成")
     print(f"   - 训练集: {len(train_dataset)} 样本")
     print(f"   - 验证集: {len(val_dataset)} 样本")
     print(f"   - 批次大小: {config.batch_size}")
@@ -344,24 +344,24 @@ def main():
     主训练函数
     包含完整的训练流程和wandb集成
     """
-    print("🚀 开始ResNet128训练流程...")
+    print(" 开始ResNet128训练流程...")
     
     # 1. 初始化wandb
     config = init_wandb()
     
     # 2. 设置设备
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"🔧 使用设备: {device}")
+    print(f" 使用设备: {device}")
     
     # 3. 创建模型
-    print("🏗️ 正在创建ResNet128模型...")
+    print(" 正在创建ResNet128模型...")
     model = ResNet128(num_classes=config.num_classes).to(device)
     
     # 计算模型参数数量
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     
-    print(f"✅ 模型创建完成")
+    print(f" 模型创建完成")
     print(f"   - 总参数数量: {total_params:,}")
     print(f"   - 可训练参数: {trainable_params:,}")
     
@@ -377,7 +377,7 @@ def main():
     os.makedirs(config.model_save_path, exist_ok=True)
     
     # 7. 训练循环
-    print(f"🎯 开始训练，共 {config.epochs} 个epoch...")
+    print(f" 开始训练，共 {config.epochs} 个epoch...")
     
     best_val_acc = 0.0
     patience_counter = 0
@@ -424,7 +424,7 @@ def main():
         val_accs.append(val_acc)
         
         # 打印结果
-        print(f"\n📊 Epoch {epoch+1} 结果:")
+        print(f"\n Epoch {epoch+1} 结果:")
         print(f"   训练损失: {train_loss:.4f}, 训练准确率: {train_acc:.2f}%")
         print(f"   验证损失: {val_loss:.4f}, 验证准确率: {val_acc:.2f}%")
         print(f"   学习率: {current_lr:.6f}")
@@ -446,7 +446,7 @@ def main():
                     'config': dict(config)
                 }, best_model_path)
                 
-                print(f"🏆 新的最佳模型已保存: {best_model_path}")
+                print(f" 新的最佳模型已保存: {best_model_path}")
                 
                 # 将模型上传到wandb
                 model_artifact = wandb.Artifact(
@@ -456,18 +456,18 @@ def main():
                 )
                 model_artifact.add_file(best_model_path)
                 wandb.log_artifact(model_artifact)
-                print("✅ 最佳模型已上传到wandb")
+                print(" 最佳模型已上传到wandb")
         else:
             patience_counter += 1
-            print(f"⏳ 验证准确率未提升，耐心计数: {patience_counter}/{config.early_stopping_patience}")
+            print(f" 验证准确率未提升，耐心计数: {patience_counter}/{config.early_stopping_patience}")
         
         # 早停检查
         if patience_counter >= config.early_stopping_patience:
-            print(f"🛑 早停触发！验证准确率连续 {config.early_stopping_patience} 个epoch未提升")
+            print(f" 早停触发！验证准确率连续 {config.early_stopping_patience} 个epoch未提升")
             break
     
     # 8. 训练完成
-    print(f"\n🎉 训练完成！")
+    print(f"\n 训练完成！")
     print(f"最佳验证准确率: {best_val_acc:.2f}%")
     
     # 保存最终模型
@@ -482,20 +482,20 @@ def main():
         'config': dict(config)
     }, final_model_path)
     
-    print(f"📁 最终模型已保存: {final_model_path}")
+    print(f" 最终模型已保存: {final_model_path}")
     
     # 9. 创建训练曲线图
     create_training_plots(train_losses, train_accs, val_losses, val_accs)
     
     # 10. 完成wandb运行
     wandb.finish()
-    print("✅ Wandb运行已完成")
+    print(" Wandb运行已完成")
 
 def create_training_plots(train_losses, train_accs, val_losses, val_accs):
     """
     创建训练曲线图并上传到wandb
     """
-    print("📈 正在创建训练曲线图...")
+    print(" 正在创建训练曲线图...")
     
     # 创建图表
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
@@ -528,7 +528,7 @@ def create_training_plots(train_losses, train_accs, val_losses, val_accs):
     
     # 上传到wandb
     wandb.log({"training_curves": wandb.Image(plot_path)})
-    print(f"✅ 训练曲线图已保存并上传到wandb: {plot_path}")
+    print(f" 训练曲线图已保存并上传到wandb: {plot_path}")
 
 # ============================================================================
 # 6. 脚本入口
@@ -538,9 +538,9 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\n⚠️ 训练被用户中断")
+        print("\n 训练被用户中断")
         wandb.finish()
     except Exception as e:
-        print(f"\n❌ 训练过程中发生错误: {str(e)}")
+        print(f"\n 训练过程中发生错误: {str(e)}")
         wandb.finish()
         raise e 
